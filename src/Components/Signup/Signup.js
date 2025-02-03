@@ -1,24 +1,38 @@
 import React, { useContext, useState } from 'react';
 import Logo from '../../olx-logo.png';
 import './Signup.css';
-import { FirebaseContext } from '../../store/firebaseContext';
-import {auth} from '../../firebase/config'
-import {createUserWithEmailAndPassword,updateProfile} from 'firebase/auth'
+import { FirebaseContext } from '../../store/Context';
+import { auth, db } from '../../firebase/config';
+import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom'
 
 export default function Signup() {
-  const [username,setUsername]=useState("");
-  const [useremail,setUserEmail]=useState("");
-  const [usernumber,setUsernumber]=useState("");
-  const [userpassword,setUserpassword]=useState("");
-  const {firebase}=useContext(FirebaseContext);
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [useremail, setUserEmail] = useState("");
+  const [usernumber, setUsernumber] = useState("");
+  const [userpassword, setUserpassword] = useState("");
+  const { firebase } = useContext(FirebaseContext);
 
-  const handleSubmit=(e)=>{
+  const handleSubmit = (e) => {
     e.preventDefault();
     console.log(firebase);
     createUserWithEmailAndPassword(auth, useremail, userpassword)
-    .then((result) => {
-      return updateProfile(result.user, { displayName: username });
-    })
+      .then((result) => {
+        return updateProfile(result.user, { displayName: username }).then(() => {
+          return result;
+        });
+      }).then((result) => {
+        const userDocRef = doc(collection(db, "users"), result.user.uid);
+        return setDoc(userDocRef, {
+          uid: result.user.uid,
+          username: username,
+          usernumber: usernumber,
+        });
+      }).then(() => {
+        navigate("/login");
+      })
   }
 
   return (
@@ -33,7 +47,7 @@ export default function Signup() {
             type="text"
             id="fname"
             value={username}
-            onChange={(e)=>setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.target.value)}
             name="name"
             defaultValue="John"
           />
@@ -45,7 +59,7 @@ export default function Signup() {
             type="email"
             id="fname"
             value={useremail}
-            onChange={(e)=>setUserEmail(e.target.value)}
+            onChange={(e) => setUserEmail(e.target.value)}
             name="email"
             defaultValue="John"
           />
@@ -57,7 +71,7 @@ export default function Signup() {
             type="number"
             id="lname"
             value={usernumber}
-            onChange={(e)=>setUsernumber(e.target.value)}
+            onChange={(e) => setUsernumber(e.target.value)}
             name="phone"
             defaultValue="Doe"
           />
@@ -69,7 +83,7 @@ export default function Signup() {
             type="password"
             id="lname"
             value={userpassword}
-            onChange={(e)=>setUserpassword(e.target.value)}
+            onChange={(e) => setUserpassword(e.target.value)}
             name="password"
             defaultValue="Doe"
           />

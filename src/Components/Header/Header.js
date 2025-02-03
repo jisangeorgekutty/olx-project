@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import './Header.css';
 import OlxLogo from '../../assets/OlxLogo';
@@ -6,7 +6,34 @@ import Search from '../../assets/Search';
 import Arrow from '../../assets/Arrow';
 import SellButton from '../../assets/SellButton';
 import SellButtonPlus from '../../assets/SellButtonPlus';
+import { AuthContext } from '../../store/Context';
+import { onAuthStateChanged,signOut } from 'firebase/auth';
+import { auth} from '../../firebase/config'
+import { useNavigate } from 'react-router-dom';
+
 function Header() {
+  const navigate = useNavigate();
+  const [userd,setUserd]=useState(null)
+  useEffect(()=>{
+    onAuthStateChanged(auth,(currentUser)=>{
+      setUserd(currentUser);
+    })
+  })
+
+  const handleLogout=()=>{
+    signOut(auth)
+      .then(() => {
+        setUserd(null);signOut(auth)
+        .then(() => {
+          setUserd(null); // ✅ Clear user state in AuthContext
+          console.log("User signed out successfully");
+        }).then(()=>{
+          navigate('/login')
+        })
+      })
+  }
+  const user = useContext(AuthContext);
+  console.log("Name" + user?.displayName)
   return (
     <div className="headerParentDiv">
       <div className="headerChildDiv">
@@ -34,9 +61,10 @@ function Header() {
           <Arrow></Arrow>
         </div>
         <div className="loginPage">
-          <span>Login</span>
+          <span>{userd ? userd?.displayName : 'Login'}</span>
           <hr />
         </div>
+        {userd ? <span onClick={handleLogout}>Logout</span> : ""}
 
         <div className="sellMenu">
           <SellButton></SellButton>
