@@ -25,7 +25,7 @@ function Header() {
       .then(() => {
         setUserd(null);signOut(auth)
         .then(() => {
-          setUserd(null); // ✅ Clear user state in AuthContext
+          setUserd(null); 
           console.log("User signed out successfully");
         }).then(()=>{
           navigate('/login')
