@@ -32,8 +32,8 @@ function Header() {
         })
       })
   }
-  const user = useContext(AuthContext);
-  console.log("Name" + user?.displayName)
+  // const user = useContext(AuthContext);
+  // console.log("Name" + user?.displayName)
   return (
     <div className="headerParentDiv">
       <div className="headerChildDiv">
@@ -61,7 +61,7 @@ function Header() {
           <Arrow></Arrow>
         </div>
         <div className="loginPage">
-          <span>{userd ? userd?.displayName : 'Login'}</span>
+          <span>{userd ? `${userd?.displayName}` : 'Login'}</span>
           <hr />
         </div>
         {userd ? <span onClick={handleLogout}>Logout</span> : ""}
