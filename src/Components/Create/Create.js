@@ -2,11 +2,12 @@ import React, { Fragment, useContext, useState } from 'react';
 import './Create.css';
 import Header from '../Header/Header';
 import {  collection, addDoc,serverTimestamp } from "firebase/firestore";
-import { auth,db } from '../../firebase/config';
-import { AuthContext, FirebaseContext } from '../../store/Context';
+import { db } from '../../firebase/config';
+import { AuthContext } from '../../store/Context';
+import { useNavigate } from 'react-router-dom';
 
 const Create = () => { 
-  const { firebase } = useContext(FirebaseContext);
+  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const [userName, setUserName] = useState("");
   const [category, setCategory] = useState("");
@@ -34,6 +35,7 @@ const Create = () => {
         userId: user.uid,
         createdAt: serverTimestamp(),
       });
+      navigate("/")
       alert("product added");
       setUserName("");
       setCategory("");
@@ -41,7 +43,6 @@ const Create = () => {
       setImage(null);
     }catch(error){
       console.error("Error adding product:", error);
-      alert("Error adding product: " + error.message);
     }
     
   }
@@ -65,7 +66,7 @@ const Create = () => {
             />
             <br />
             <label htmlFor="fname">Category</label>
-            <br />
+            <br /> 
             <input
               className="input"
               type="text"
